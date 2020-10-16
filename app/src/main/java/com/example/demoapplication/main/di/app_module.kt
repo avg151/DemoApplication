@@ -2,7 +2,7 @@ package com.example.demoapplication.main.di
 
 import com.example.data.repository.DataRepositoryImpl
 import com.example.data.service.DataService
-import com.example.demoapplication.main.fragment.MainViewModel
+import com.example.demoapplication.main.view.fragment.MainViewModel
 import com.example.domain.repository.DataRepository
 import com.example.domain.usecase.GetDataUseCase
 import okhttp3.OkHttpClient

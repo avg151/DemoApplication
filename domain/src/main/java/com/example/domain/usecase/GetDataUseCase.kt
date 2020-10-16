@@ -5,7 +5,7 @@ import com.example.domain.repository.DataRepository
 import com.example.domain.usecase.base.BaseUseCase
 import com.example.domain.usecase.base.Result
 
-class GetDataUseCase(private val dataRepository: DataRepository) : BaseUseCase<Int, DataModel>() {
+class GetDataUseCase(private val dataRepository: DataRepository) : BaseUseCase<Int, List<DataModel>>() {
 
     override suspend fun run(params: Int) {
         resultChannel.send(Result.Loading)

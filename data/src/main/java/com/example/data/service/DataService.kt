@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface DataService {
 
-    @GET("api/characters/2")
-    suspend fun getData(): Response<DataResponse>
+    @GET("api/characters")
+    suspend fun getData(): Response<List<DataResponse>>
 }

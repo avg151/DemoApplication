@@ -1,19 +1,19 @@
 package com.example.domain.usecase.base
 
-sealed class Result<out T, out R> {
+sealed class Result<out S, out E> {
     class Success<out T>(val successData: T) : Result<T, Nothing>()
-    class Failure<out R : Error>(val errorData: R) : Result<Nothing, R>()
+    class Error<out E>(val errorData: E) : Result<Nothing, E>()
     object Loading : Result<Nothing, Nothing>()
 
     fun handleResult(
         loadingBlock: (Loading) -> Unit = {},
-        successBlock: (T) -> Unit = {},
-        failureBlock: (R) -> Unit = {}
+        successBlock: (S) -> Unit = {},
+        errorBlock: (E) -> Unit = {}
     ) {
         when (this) {
             is Loading -> loadingBlock(this)
             is Success -> successBlock(successData)
-            is Failure -> failureBlock(errorData)
+            is Error -> errorBlock(errorData)
         }
     }
 }

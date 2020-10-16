@@ -1,7 +1,8 @@
 package com.example.demoapplication.base
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.domain.usecase.base.Error
 import com.example.domain.usecase.base.Result
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,19 +13,19 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-abstract class BaseViewModel<T> : ViewModel(), CoroutineScope {
+abstract class BaseViewModel<DataModel, ErrorModel, SuccessScreenState, ErrorScreenState> : ViewModel(),
+    CoroutineScope {
 
     private val job = Job()
-    protected abstract val receiveChannel: ReceiveChannel<Result<T, Error>>
+    protected abstract val receiveChannel: ReceiveChannel<Result<DataModel, ErrorModel>>
 
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
 
-    init {
-        processStream()
-    }
+    private val screenState = MutableLiveData<Result<SuccessScreenState, ErrorScreenState>>()
+    fun screenState(): LiveData<Result<SuccessScreenState, ErrorScreenState>> = screenState
 
-    private fun processStream() {
+    init {
         launch {
             receiveChannel.consumeEach {
                 resolve(it)
@@ -32,15 +33,25 @@ abstract class BaseViewModel<T> : ViewModel(), CoroutineScope {
         }
     }
 
-    private fun resolve(value: Result<T, Error>) {
+    private fun resolve(value: Result<DataModel, ErrorModel>) {
         value.handleResult(::handleLoading, ::handleSuccess, ::handleFailure)
     }
 
-    abstract fun handleLoading(state: Result.Loading)
+    private fun handleLoading(result: Result.Loading) {
+        screenState.postValue(result)
+    }
 
-    abstract fun handleSuccess(state: T)
+    private fun handleSuccess(result: DataModel) {
+        screenState.postValue(Result.Success(successState(result)))
+    }
 
-    abstract fun handleFailure(state: Error)
+    private fun handleFailure(result: ErrorModel) {
+        screenState.postValue(Result.Error(errorState(result)))
+    }
+
+    abstract fun successState(result: DataModel): SuccessScreenState
+
+    abstract fun errorState(result: ErrorModel): ErrorScreenState
 
     override fun onCleared() {
         receiveChannel.cancel()

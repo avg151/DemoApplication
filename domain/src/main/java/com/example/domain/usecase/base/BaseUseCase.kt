@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlin.coroutines.CoroutineContext
 
-typealias SimpleResult<T> = Result<T, Error>
+typealias SimpleResult<T> = Result<T, ErrorModel>
 
 abstract class BaseUseCase<in Params, T> : CoroutineScope {
 
